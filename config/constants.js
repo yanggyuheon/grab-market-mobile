@@ -1,2 +1,3 @@
 // 주소 킬때마다 변경 필요
-export const API_URL = "https://d9bc-125-130-80-116.jp.ngrok.io";
+// export const API_URL = "http://localhost:8080";
+export const API_URL = "https://d8e6-61-99-5-130.jp.ngrok.io";

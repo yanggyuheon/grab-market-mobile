@@ -5,18 +5,19 @@ import {
   View,
   Image,
   ScrollView,
+  ActivityIndicator,
   Dimensions,
   TouchableOpacity,
   Alert,
   SafeAreaView,
 } from "react-native";
-import Avatar from "../assets/icons/avatar.png";
 import { API_URL } from "../config/constants";
 import axios from "axios";
 import React from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko"; // 영어 => 한글
+import ProductCard from "../components/productCard";
 // import Carousel from "react-native-snap-carousel";
 
 dayjs.extend(relativeTime);
@@ -43,6 +44,9 @@ export default function MainScreen(props) {
         console.error(console.error());
       });
   }, []);
+  if (!banners[0]) {
+    return <ActivityIndicator />; // loading 처리
+  }
   return (
     <View style={styles.container}>
       <ScrollView>
@@ -67,46 +71,24 @@ export default function MainScreen(props) {
               );
             }}
           /> */}
+        <View>
+          <Image
+            style={styles.tempbannerImage}
+            source={{
+              uri: `${API_URL}/${banners[0].imageUrl}`,
+            }}
+            resizeMode="contain"
+          ></Image>
+        </View>
         <Text style={styles.headline}>판매되는 상품들</Text>
         <View style={styles.productList}>
           {products.map((product, index) => {
             return (
-              <TouchableOpacity
+              <ProductCard
+                product={product}
                 key={index}
-                onPress={() => {
-                  props.navigation.navigate("Product", {
-                    id: product.id,
-                  });
-                }}
-              >
-                <View style={styles.productCard} key={index}>
-                  {product.soldout === 1 && <View style={styles.productBlur} />}
-                  <View>
-                    <Image
-                      style={styles.productImage}
-                      source={{
-                        uri: `${API_URL}/${product.imageUrl}`,
-                      }}
-                      resizeMode={"contain"}
-                    />
-                  </View>
-                  <View style={styles.productContents}>
-                    <Text style={styles.productName}>{product.name}</Text>
-                    <Text style={styles.productPrice}>{product.price}원</Text>
-                    <View style={styles.productFooter}>
-                      <View style={styles.productSeller}>
-                        <Image style={styles.productAvatar} source={Avatar} />
-                        <Text style={styles.productSellerName}>
-                          {product.seller}
-                        </Text>
-                      </View>
-                      <Text style={styles.productDate}>
-                        {dayjs(product.createdAt).fromNow()}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              </TouchableOpacity>
+                navigation={props.navigation}
+              />
             );
           })}
         </View>
@@ -132,6 +114,10 @@ const styles = StyleSheet.create({
   productImage: {
     width: "100%",
     height: 210,
+  },
+  tempbannerImage: {
+    width: "100%",
+    height: 120,
   },
   productContents: {
     padding: 8,
